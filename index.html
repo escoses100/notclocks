@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title></title>
+  <link rel="stylesheet" href="./css/lib/bootstrap.min.css">
+  <!-- Custom styles for this template ---->
+
+  <link href="./css/navbar.css" rel="stylesheet">
+  <script src="./js/d3.v4.min.js"></script>
+  <script src="./js/jquery.min.js"></script>
+  <style>
+    form {
+      top: 1em;
+      left: 1em;
+    }
+
+    path {
+      fill-rule: evenodd;
+      stroke: #333;
+      stroke-width: 2px;
+    }
+
+    .sun path {
+      fill: #6baed6;
+    }
+
+    .planet path {
+      fill: #9ecae1;
+    }
+
+    .annulus path {
+      fill: #c6dbef;
+    }
+
+    drawpath {
+      fill: none;
+      stroke: #000;
+      stroke-width: 3px;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+  </style>
+</head>
+
+<body data-spy="scroll" data-target=".scrollspy">
+  <div class="container">
+    <div>
+      <form>
+        <script>
+          function showcolor(color) {
+            document.getElementById('colorpicker').style.backgroundColor = color;
+            // document.getElementById('colorcol2').style.backgroundColor = color;
+          }
+          function showcolorback(color) {
+            document.getElementById('bkgcolorpicker').style.backgroundColor = color;
+            // document.getElementById('colorcol2').style.backgroundColor = color;
+          }
+
+          function setback(color) {
+            var re = new RegExp("#");
+            if (re.test(color)) {
+              document.getElementById('map').style.backgroundColor = color;
+              document.getElementById('map').style.backgroundImage = "";
+            } else {
+              document.getElementById('map').style.backgroundImage = color;
+              document.getElementById('map').style.backgroundSize = "50px 50px";
+              document.getElementById('map').style.backgroundRepeat =
+                "repeat"; // repeat-y or repeat-x for horiz or vert 
+            }
+            //document.getElementById('colorcol2').style.backgroundColor = color;
+          }
+          function escapeview() {
+            // alert(document.getElementById('escape_mechanism').style.display)
+            if (document.getElementById('escape_mechanism').style.display == 'none') {
+              document.getElementById('escape_mechanism').style.display = 'block'
+              document.getElementById('escape_mechanism_btn').innerHTML = 'hide escape mechanism buttons'
+            } else {
+              document.getElementById('escape_mechanism').style.display = 'none'
+              document.getElementById('escape_mechanism_btn').innerHTML = 'show escape mechanism buttons'
+            }
+            
+          }
+        </script>
+        <a id="escape_mechanism_btn" href="#" onclick="escapeview()">show escape mechanism buttons</a>
+        <br>
+        <br>
+        <select class="btn btn-sm btn-primary"
+          style="display:inline-block;height:20px;width:60px;margin:2px;border:1px solid black" id="colorpicker"
+          onchange="showcolor(this.value)">
+          <option value="#FFFFFF">Color</option>
+          <option value="#FFFFFF">White</option>
+          <option value="#BBBBBB">Lt Gray</option>
+          <option value="#555555">Dk Gray</option>
+          <option value="#000000">Black</option>
+          <option value="#FF0000">Red</option>
+          <option value="#FF8D00">Orange</option>
+          <option value="#FFB400">Lt Orange</option>
+          <option value="#FFCE00">Ornge-Yell</option>
+          <option value="#FFE700">Yellow</option>
+          <option value="#A9FFE5">Aqua</option>
+          <option value="#88FFC8">Seafoam</option>
+          <option value="#46E0C1">Turquoise</option>
+          <option value="#237E73">Blue-Gn</option>
+          <option value="#0C5461">Dk Blue-Gn</option>
+          <option value="#00E9FF">Sea Blue</option>
+          <option value="#00B0FF">Lt Blue</option>
+          <option value="#2162E3">Blue</option>
+          <option value="#4400F2">Dk Blue</option>
+          <option value="#AED53F">Lt Green</option>
+          <option value="#77C551">Green</option>
+          <option value="#31B16B">Frog</option>
+          <option value="url('#smoke')">smoke</option>
+          <option value="url('#stars')">stars</option>
+          <option value="url('#hline')">hline</option>
+          <option value="url('#hvline')">hvline</option>
+        </select>
+        <a class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="startit()">Rotate</a>
+        <a class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="stopit()">Stop</a>
+        <a class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" onclick=""></a>
+        <a class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear1(30,100,document.getElementById('colorpicker').value,8,120)">G 8t cc</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear2(30,120,document.getElementById('colorpicker').value,8,120)">G 8t c</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear1(40,140,document.getElementById('colorpicker').value,10,150)">G 10t cc</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear2(40,160,document.getElementById('colorpicker').value,10,150)">G 10t c</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear1(40,180,document.getElementById('colorpicker').value,15,225)">G 15t cc</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear2(40,200,document.getElementById('colorpicker').value,15,225)">G 15t c</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear1(40,180,document.getElementById('colorpicker').value,20,300)">G 20t cc</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear2(40,200,document.getElementById('colorpicker').value,20,300)">G 20t c</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear1(60,220,document.getElementById('colorpicker').value,30,450)">G 30t cc</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear2(60,240,document.getElementById('colorpicker').value,30,450)">G 30t c</a>
+          <a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear3(60,260,document.getElementById('colorpicker').value,30,450)">R 30t c</a>
+          <a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear3(60,260,document.getElementById('colorpicker').value,60,900)">R 60t c</a>
+          
+          <!-- escape mechanism shapes -->
+          <div id="escape_mechanism" style="display:none;">
+          <a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagearbig(40,200,document.getElementById('colorpicker').value,15,225)">BG 15t</a>
+          <a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagearbig(60,240,document.getElementById('colorpicker').value,30,450)">BG 30t</a>
+          <a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addagear3(60,260,document.getElementById('colorpicker').value,30,450)">Ring 2</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addescape(70,290,document.getElementById('colorpicker').value,15,300)">EscGr</a>
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addescapetop(70,290,document.getElementById('colorpicker').value,15,300)") EscGrT-->
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="tinystem(70,290,document.getElementById('colorpicker').value,15,300)") Tnystm-->
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addratchet(70,290,document.getElementById('colorpicker').value,6,150)") Rachet-->
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addclicker(70,290,document.getElementById('colorpicker').value,6,150)") Clicker-->
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addclicker2(70,290,document.getElementById('colorpicker').value,6,150)") Clicker2-->
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addanchor(70,290,document.getElementById('colorpicker').value,15,300)") Anchor--><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addanchor2(70,290,document.getElementById('colorpicker').value,15,300)">AnchorS</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="anchormiddle(70,290,document.getElementById('colorpicker').value,15,300)">AnchorM</a>
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addanchorbase(70,290,document.getElementById('colorpicker').value,15,300)") A-base-->
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addshortstem(70,290,document.getElementById('colorpicker').value,15,300)") ShStem-->
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addlongstem(70,290,document.getElementById('colorpicker').value,15,300)") LgStem--><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addanchstem(70,290,document.getElementById('colorpicker').value,15,300)">AStem</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addplate(70,290,document.getElementById('colorpicker').value,15,300)">Aplate</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="addaxel(70,290,document.getElementById('colorpicker').value,15,300)">Aaxel</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="thicktest(70,290,document.getElementById('colorpicker').value,15,300)">thicktst</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="fastener(70,290,document.getElementById('colorpicker').value,15,300)">fastener</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="bigfastener(70,290,document.getElementById('colorpicker').value,15,300)">Bfastener</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="tfastener(70,290,document.getElementById('colorpicker').value,15,300)">tfastener</a>
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addanchstem2(70,290,document.getElementById('colorpicker').value,15,300)") AStem2-->
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addstemend(70,290,document.getElementById('colorpicker').value,15,300)") StmEnd--><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="smspool(70,290,document.getElementById('colorpicker').value,15,100)">SmSpool</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="mdspool(70,290,document.getElementById('colorpicker').value,15,125)">MdSpool</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="lgspool(70,290,document.getElementById('colorpicker').value,15,200)">LgSpool</a>
+        <!--a(href='#', style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" class="btn btn-sm btn-primary" onclick="addspool2(70,290,document.getElementById('colorpicker').value,15,75)") SSpool--><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="pendant(70,290,document.getElementById('colorpicker').value,15,350)">Pendant</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="updategear(document.getElementById('colorpicker').value)">Selected</a><br><br><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="housestem(70,290,document.getElementById('colorpicker').value,15,300)">HStem</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="housesidestem(70,290,document.getElementById('colorpicker').value,15,300)">HLStem</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="houseaxel(70,290,document.getElementById('colorpicker').value,15,300)">HMaxel</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="housegaxel(70,290,document.getElementById('colorpicker').value,15,300)">HGaxel</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="housemountbar(70,290,document.getElementById('colorpicker').value,15,300)">Hmount</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="housemountblock(70,290,document.getElementById('colorpicker').value,15,300)">Hmblock</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="houseplate(70,290,document.getElementById('colorpicker').value,15,300)">Hplate</a><br><br><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="bigmotorstem(70,290,document.getElementById('colorpicker').value,15,300)">MotorStem</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="hookstem(70,290,document.getElementById('colorpicker').value,15,300)">HookStem</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="bigshortstem(70,290,document.getElementById('colorpicker').value,15,300)">ShortStem</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="big2323stem(70,290,document.getElementById('colorpicker').value,15,300)">2323Stem</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="big232stem(70,290,document.getElementById('colorpicker').value,15,300)">232Stem</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="bigaxel2(70,290,document.getElementById('colorpicker').value,15,300)">axel2</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="bigaxel3(70,290,document.getElementById('colorpicker').value,15,300)">axel3</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="bigaxel4(70,290,document.getElementById('colorpicker').value,15,300)">axel4</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="thickaxel2(70,290,document.getElementById('colorpicker').value,15,300)">thaxel2</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="thickaxel3(70,290,document.getElementById('colorpicker').value,15,300)">thaxel3</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="bigmountbar(70,290,document.getElementById('colorpicker').value,15,300)">MountBar</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="motormountbar(70,290,document.getElementById('colorpicker').value,15,300)">motorMount</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="bigplate(70,290,document.getElementById('colorpicker').value,15,300)">BigPlate</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="bigplatepuzzle(70,290,document.getElementById('colorpicker').value,15,300)">PZBgPlate</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="smallplate(70,290,document.getElementById('colorpicker').value,15,300)">SmallPlate</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="smallplatepuzzle(70,290,document.getElementById('colorpicker').value,15,300)">PZSmPlate</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="motorplate(70,290,document.getElementById('colorpicker').value,15,300)">MotorPlate</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="anchorsquare(70,290,document.getElementById('colorpicker').value,15,300)">Anchorplate</a><a
+          class="btn btn-sm btn-primary" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="weightbox(70,290,document.getElementById('colorpicker').value,15,300)">Weightbox</a>
+          
+          </div>
+          <!-- end escape mechanism buttons -->
+          <br>
+        <p></p>
+        <select class="btn btn-sm btn-default"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black" id="bkgcolorpicker"
+          onchange="showcolorback(this.value)">
+          <option value="#FFFFFF">Color</option>
+          <option value="#FFFFFF">White</option>
+          <option value="#BBBBBB">Lt Gray</option>
+          <option value="#555555">Dk Gray</option>
+          <option value="#000000">Black</option>
+          <option value="#FF0000">Red</option>
+          <option value="#FF8D00">Orange</option>
+          <option value="#FFB400">Lt Orange</option>
+          <option value="#FFCE00">Ornge-Yell</option>
+          <option value="#FFE700">Yellow</option>
+          <option value="#A9FFE5">Aqua</option>
+          <option value="#88FFC8">Seafoam</option>
+          <option value="#46E0C1">Turquoise</option>
+          <option value="#237E73">Blue-Gn</option>
+          <option value="#0C5461">Dk Blue-Gn</option>
+          <option value="#00E9FF">Sea Blue</option>
+          <option value="#00B0FF">Lt Blue</option>
+          <option value="#2162E3">Blue</option>
+          <option value="#4400F2">Dk Blue</option>
+          <option value="#AED53F">Lt Green</option>
+          <option value="#77C551">Green</option>
+          <option value="#31B16B">Frog</option>
+          <option value="url('./images/smoke.png')">smoke</option>
+          <option value="url('./images/stars.png')">stars</option>
+        </select><a class="btn btn-sm btn-default" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="setback(document.getElementById('bkgcolorpicker').value)">Backg</a><a class="btn btn-sm btn-default"
+          href="#" style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="savesvg()">SAVE</a><a class="btn btn-sm btn-default" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="resetall()">Reset</a><a class="btn btn-sm btn-default" href="#"
+          style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+          onclick="nocolor()">Wash</a>
+        <div id="link">download...</div>
+        <p></p>
+      </form>
+    </div>
+    <div><br>
+      <svg id="map" style="border:1px solid black"></svg><br>
+    </div>
+    <div><a class="btn btn-sm btn-primary" href="#"
+        style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+        onclick="drawongear()">Draw</a><br>
+      <svg id="mapdraw" style="border:1px solid black" viewbox="-500 -500 2000 2000"></svg><br>
+      <hr><br><br><br><a class="btn btn-sm btn-default" href="#"
+        style="display:inline-block;height:25px;width:60px;margin:2px;border:1px solid black"
+        id="startDropper">Eyedrop</a>
+      <div id="results" width="10" height="10"></div>
+      <canvas id="viewport"></canvas>
+    </div>
+  </div>
+  <script src="./js/SKMTiKs.js"></script>
+  <script src="./js/jquery.min.js"></script>
+  <script src="./js/bootstrap.min.js"></script>
+</body>
+
+</html>
